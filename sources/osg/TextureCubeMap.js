@@ -8,80 +8,6 @@ define( [
 
     'use strict';
 
-    var FaceImage = function () {
-        this._image = undefined;
-        this._format = undefined;
-        this._dirty = true;
-        this._mipmap = [];
-    };
-
-    FaceImage.prototype = {
-
-        useOrCreateImage: function ( img ) {
-
-            var image = img;
-            if ( image instanceof( Image ) === false ) {
-                image = new Image( img );
-            }
-            return image;
-        },
-
-        release: function () {
-            this._mipmap.length = 0;
-            this._image = undefined;
-        },
-
-        getImage: function () {
-            return this._image;
-        },
-
-        isDirty: function () {
-            return this._dirty;
-        },
-
-        setDirty: function ( b ) {
-            this._dirty = b;
-        },
-
-        getFormat: function () {
-            return this._format;
-        },
-
-        getMipmap: function () {
-            return this._mipmap;
-        },
-
-        hasMipmap: function () {
-            return this._mipmap.length > 1;
-        },
-
-        // img can be an image or an array of image if specify the
-        // all mipmap levels
-        setImage: function ( img, imageFormat ) {
-
-            if ( typeof ( imageFormat ) === 'string' ) {
-                imageFormat = Texture[ imageFormat ];
-            }
-
-            if ( imageFormat === undefined ) {
-                imageFormat = Texture.RGBA;
-            }
-
-            if ( Array.isArray( img ) ) {
-                for ( var i = 0; i < img.length; i++ ) {
-                    this._mipmap.push( this.useOrCreateImage( img[ i ] ) );
-                }
-            } else {
-                this._mipmap.push( this.useOrCreateImage( img ) );
-            }
-
-            this._image = this._mipmap[ 0 ];
-            this._format = imageFormat;
-            this._dirty = true;
-        }
-    };
-
-
     /**
      * TextureCubeMap
      * @class TextureCubeMap
@@ -94,7 +20,7 @@ define( [
 
         // pre allocated all textures faces slots
         for ( var i = 0; i < 6; i++ ) {
-            this._images[ Texture.TEXTURE_CUBE_MAP_POSITIVE_X + i ] = new FaceImage();
+            this._images[ Texture.TEXTURE_CUBE_MAP_POSITIVE_X + i ] = new Image();
         }
 
     };

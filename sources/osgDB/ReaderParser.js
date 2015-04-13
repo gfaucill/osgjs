@@ -31,6 +31,10 @@ define( [
     };
     ReaderParser.readImageURL = ReaderParser.readImage; // alias
 
+    ReaderParser.readBinaryArrayURL = function ( url, options ) {
+        return ReaderParser.registry().readBinaryArrayURL( url, options );
+    };
+
     ReaderParser.readNodeURL = function ( url, options ) {
         return ReaderParser.registry().readNodeURL( url, options );
     };

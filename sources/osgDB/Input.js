@@ -225,13 +225,10 @@ define( [
                 if ( req.readyState === 4 ) {
                     if ( req.status === 200 ) {
                         var ReaderParser = require( 'osgDB/ReaderParser' );
-                        Q.when( ReaderParser.parseSceneGraph( JSON.parse( req.responseText ),
-                                options ),
-                            function ( child ) {
-                                defer.resolve( child );
-                                Notify.log( 'loaded ' + url );
-
-                            } ).fail( function ( error ) {
+                        Q( ReaderParser.parseSceneGraph( JSON.parse( req.responseText ), options ) ).then( function ( child ) {
+                            defer.resolve( child );
+                            Notify.log( 'loaded ' + url );
+                        } ).fail( function ( error ) {
                             defer.reject( error );
                         } );
                     } else {
@@ -297,7 +294,7 @@ define( [
 
             var url = vb.File;
             var defer = Q.defer();
-            Q.when( this.readBinaryArrayURL( url ) ).then( function ( array ) {
+            Q( this.readBinaryArrayURL( url ) ).then( function ( array ) {
 
                 var typedArray;
                 // manage endianness
@@ -470,11 +467,10 @@ define( [
                 obj = new DrawElements( mode );
 
                 this.setJSON( jsonArray );
-                Q.when( this.readBufferArray() ).then(
-                    function ( array ) {
-                        obj.setIndices( array );
-                        defer.resolve( obj );
-                    } );
+                Q( this.readBufferArray() ).then( function ( array ) {
+                    obj.setIndices( array );
+                    defer.resolve( obj );
+                } );
                 this.setJSON( prevJson );
             }
 

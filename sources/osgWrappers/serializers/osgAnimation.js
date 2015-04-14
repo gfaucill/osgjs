@@ -4,6 +4,8 @@ define( [
     'osgWrappers/serializers/osg'
 ], function ( Q, Notify, osgWrapper ) {
 
+    'use strict';
+
     var osgAnimationWrapper = {};
 
     osgAnimationWrapper.Animation = function ( input, animation ) {
@@ -28,8 +30,8 @@ define( [
             return undefined;
         }
 
-        var createPromiseCallback = function( animation ) {
-            return function( chan ) {
+        var createPromiseCallback = function ( animation ) {
+            return function ( chan ) {
                 if ( chan ) {
                     animation.getChannels().push( chan );
                 }
@@ -37,7 +39,7 @@ define( [
         };
         // channels
         for ( var i = 0, l = jsonObj.Channels.length; i < l; i++ ) {
-            Q.when( input.setJSON( jsonObj.Channels[ i ] ).readObject() ).then( createPromiseCallback( animation ) );
+            Q( input.setJSON( jsonObj.Channels[ i ] ).readObject() ).then( createPromiseCallback( animation ) );
         }
         return animation;
     };

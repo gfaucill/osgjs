@@ -47,7 +47,7 @@ define( [
             var promise = input.setJSON( jsonCallback ).readObject();
             var df = Q.defer();
             promiseArray.push( df.promise );
-            Q.when( promise ).then( function ( cb ) {
+            Q( promise ).then( function ( cb ) {
                 if ( cb ) {
                     node.addUpdateCallback( cb );
                 }
@@ -65,7 +65,7 @@ define( [
             var pp = input.setJSON( jsonObj.StateSet ).readObject();
             var df = Q.defer();
             promiseArray.push( df.promise );
-            Q.when( pp ).then( function ( stateset ) {
+            Q( pp ).then( function ( stateset ) {
                 node.setStateSet( stateset );
                 df.resolve();
             } );
@@ -74,7 +74,7 @@ define( [
         var createChildren = function ( jsonChildren ) {
             var promise = input.setJSON( jsonChildren ).readObject();
             var df = Q.defer();
-            Q.when( promise ).then( function ( obj ) {
+            Q( promise ).then( function ( obj ) {
                 df.resolve( obj );
             } );
             return df.promise;
@@ -87,15 +87,10 @@ define( [
                 queue.push( createChildren( jsonObj.Children[ i ] ) );
             }
         }
-        // Resolve first updateCallbacks and stateset.
-        var deferred = Q.defer();
-        Q.all( promiseArray ).then( function () {
-            deferred.resolve();
-        } );
-
         var defer = Q.defer();
-        // Need to wait until the stateset and the all the callbacks are resolved
-        Q( deferred.promise ).then( function () {
+        // Resolve first updateCallbacks and stateset.
+        Q.all( promiseArray ).then( function () {
+            // Need to wait until the stateset and the all the callbacks are resolved
             Q.all( queue ).then( function () {
                 // All the results from Q.all are on the argument as an array
                 // Now insert children in the right order
@@ -127,7 +122,7 @@ define( [
             var promise = input.setJSON( jsonAttribute ).readObject();
             var df = Q.defer();
             promiseArray.push( df.promise );
-            Q.when( promise ).then( function ( attribute ) {
+            Q( promise ).then( function ( attribute ) {
                 if ( attribute !== undefined ) {
                     stateSet.setAttributeAndModes( attribute );
                 }
@@ -147,7 +142,7 @@ define( [
             var promise = input.setJSON( textureAttribute ).readObject();
             var df = Q.defer();
             promiseArray.push( df.promise );
-            Q.when( promise ).then( function ( attribute ) {
+            Q( promise ).then( function ( attribute ) {
                 if ( attribute )
                     stateSet.setTextureAttributeAndModes( unit, attribute );
                 df.resolve();
@@ -326,11 +321,10 @@ define( [
         }
 
         var defer = Q.defer();
-        Q.when( input.readImageURL( file ) ).then(
-            function ( img ) {
-                texture.setImage( img );
-                defer.resolve( texture );
-            } );
+        Q( input.readImageURL( file ) ).then( function ( img ) {
+            texture.setImage( img );
+            defer.resolve( texture );
+        } );
         return defer.promise;
     };
 
@@ -414,7 +408,7 @@ define( [
             var defer = Q.defer();
             arraysPromise.push( defer.promise );
             var promise = input.setJSON( jsonPrimitive ).readPrimitiveSet();
-            Q.when( promise ).then( function ( primitiveSet ) {
+            Q( promise ).then( function ( primitiveSet ) {
                 if ( primitiveSet !== undefined ) {
                     node.getPrimitives().push( primitiveSet );
                 }
@@ -431,7 +425,7 @@ define( [
             var defer = Q.defer();
             arraysPromise.push( defer.promise );
             var promise = input.setJSON( jsonAttribute ).readBufferArray();
-            Q.when( promise ).then( function ( buffer ) {
+            Q( promise ).then( function ( buffer ) {
                 if ( buffer !== undefined ) {
                     node.getVertexAttributeList()[ name ] = buffer;
                 }
@@ -495,7 +489,7 @@ define( [
         var createChildren = function ( jsonChildren ) {
             var promise = input.setJSON( jsonChildren ).readObject();
             var df = Q.defer();
-            Q.when( promise ).then( function ( obj ) {
+            Q( promise ).then( function ( obj ) {
                 df.resolve( obj );
             } );
             return df.promise;

@@ -474,27 +474,27 @@ define( [
 
         },
 
-        applyImage: function(gl, image) {
+        applyImage: function ( gl, image ) {
 
             if ( image.isTypedArray() ) {
                 this.applyTexImage2D( gl,
-                                      this._textureTarget,
-                                      0,
-                                      this._internalFormat,
-                                      this._textureWidth,
-                                      this._textureHeight,
-                                      0,
-                                      this._internalFormat,
-                                      this._type,
-                                      this._image.getImage() );
+                    this._textureTarget,
+                    0,
+                    this._internalFormat,
+                    this._textureWidth,
+                    this._textureHeight,
+                    0,
+                    this._internalFormat,
+                    this._type,
+                    this._image.getImage() );
             } else {
                 this.applyTexImage2D( gl,
-                                      this._textureTarget,
-                                      0,
-                                      this._internalFormat,
-                                      this._internalFormat,
-                                      this._type,
-                                      image.getImage() );
+                    this._textureTarget,
+                    0,
+                    this._internalFormat,
+                    this._internalFormat,
+                    this._type,
+                    image.getImage() );
             }
             image.setDirty( false );
 
@@ -521,7 +521,7 @@ define( [
 
                 // image update like video
                 if ( this._image !== undefined && this._image.isDirty() ) {
-                    this.applyImage(gl, this._image);
+                    this.applyImage( gl, this._image );
                 }
 
             } else if ( this._textureNull ) {
@@ -603,11 +603,9 @@ define( [
     Texture.createFromURL = function ( imageSource, format ) {
         Notify.log( 'Texture.createFromURL is deprecated, use instead osgDB.readImageURL' );
         var texture = new Texture();
-        Q.when( ReaderParser.readImage( imageSource ) ).then(
-            function ( img ) {
-                texture.setImage( img, format );
-            }
-        );
+        Q( ReaderParser.readImage( imageSource ) ).then( function ( img ) {
+            texture.setImage( img, format );
+        } );
         return texture;
     };
 

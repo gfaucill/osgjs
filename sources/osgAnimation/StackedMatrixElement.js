@@ -21,7 +21,7 @@ define( [
         this._target = {
             value: value
         };
-        this._bindTransform = value;
+        this._bindMatrix = Matrix.create();
 
         this.setName( name );
     };
@@ -42,6 +42,14 @@ define( [
 
         setMatrix: function ( m ) {
             Matrix.copy( m, this._target.value );
+        },
+
+        setBindMatrix: function ( m ) {
+            Matrix.copy( m, this._bindMatrix );
+        },
+
+        resetBindPose: function () {
+            this.setMatrix( this._bindMatrix );
         },
 
         applyToMatrix: function ( m ) {

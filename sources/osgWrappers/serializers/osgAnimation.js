@@ -283,7 +283,10 @@ define( [
 
         osgWrapper.Object( input, st );
 
-        if ( jsonObj.Translate ) st.setTranslate( jsonObj.Translate );
+        if ( jsonObj.Translate ) {
+            st.setTranslate( jsonObj.Translate );
+            st.setBindTranslate( jsonObj.Translate );
+        }
         return P.resolve( st );
     };
 
@@ -294,7 +297,10 @@ define( [
 
         osgWrapper.Object( input, st );
 
-        if ( jsonObj.Quaternion ) st.setQuaternion( jsonObj.Quaternion );
+        if ( jsonObj.Quaternion ) {
+            st.setQuaternion( jsonObj.Quaternion );
+            st.setBindQuaternion( jsonObj.Quaternion );
+        }
         return P.resolve( st );
     };
 
@@ -305,7 +311,11 @@ define( [
 
         osgWrapper.Object( input, st );
 
-        if ( jsonObj.Angle ) st.setAngle( jsonObj.Angle );
+        if ( jsonObj.Angle !== undefined ) {
+            st.setAngle( jsonObj.Angle );
+            st.setBindAngle( jsonObj.Angle );
+        }
+
         st.setAxis( jsonObj.Axis );
         return P.resolve( st );
     };
@@ -318,6 +328,7 @@ define( [
         osgWrapper.Object( input, sme );
 
         sme.setMatrix( jsonObj.Matrix );
+        sme.setBindMatrix( jsonObj.Matrix );
 
         return P.resolve( sme );
     };
@@ -330,6 +341,7 @@ define( [
         osgWrapper.Object( input, stc );
 
         stc.setScale( jsonObj.Scale );
+        stc.setBindScale( jsonObj.Scale );
 
         return P.resolve( stc );
     };

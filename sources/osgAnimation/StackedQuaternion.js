@@ -21,7 +21,7 @@ define( [
         this._target = {
             value: value
         };
-        this._bindTransform = value;
+        this._bindQuat = Quat.create();
 
         this.setName( name );
     };
@@ -38,6 +38,14 @@ define( [
 
         getTarget: function () {
             return this._target;
+        },
+
+        setBindQuaternion: function ( q ) {
+            Quat.copy( q, this._bindQuat );
+        },
+
+        resetBindPose: function () {
+            this.setQuaternion( this._bindQuat )
         },
 
         applyToMatrix: ( function () {

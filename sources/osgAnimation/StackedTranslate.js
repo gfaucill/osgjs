@@ -19,7 +19,7 @@ define( [
         this._target = {
             value: value
         };
-        this._bindTransform = value;
+        this._bindTranslate = Vec3.create();
         if ( name ) this.setName( name );
     };
 
@@ -36,6 +36,14 @@ define( [
 
         getTarget: function () {
             return this._target;
+        },
+
+        setBindTranslate: function ( translate ) {
+            Vec3.copy( translate, this._bindTranslate );
+        },
+
+        resetBindPose: function () {
+            this.setTranslate( this._bindTranslate );
         },
 
         applyToMatrix: function ( m ) {

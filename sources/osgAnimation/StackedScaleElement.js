@@ -19,7 +19,7 @@ define( [
         this._target = {
             value: value
         };
-        this._bindTransform = value;
+        this._bindScale = Vec3.create();
         if ( name ) this.setName( name );
     };
 
@@ -36,6 +36,14 @@ define( [
 
         getTarget: function () {
             return this._target;
+        },
+
+        setBindScale: function ( scale ) {
+            Vec3.copy( scale, this._bindScale );
+        },
+
+        resetBindPose: function () {
+            this.setScale( this._bindScale );
         },
 
         applyToMatrix: function ( m ) {

@@ -21,7 +21,6 @@ define( [
         this._target = {
             value: angle || 0.0
         };
-        this._bindTransform = this._target.value;
         this.setName( name );
 
     };
@@ -42,6 +41,14 @@ define( [
 
         getTarget: function () {
             return this._target;
+        },
+
+        setBindAngle: function ( angle ) {
+            this._bindAngle = angle;
+        },
+
+        resetBindPose: function () {
+            this.setAngle( this._bindAngle );
         },
 
         applyToMatrix: ( function () {

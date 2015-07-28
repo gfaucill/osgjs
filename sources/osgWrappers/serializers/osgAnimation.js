@@ -2,8 +2,9 @@ define( [
     'bluebird',
     'osgWrappers/serializers/osg',
     'osgAnimation/Channel',
-    'osgAnimation/Animation'
-], function ( P, osgWrapper, Channel, Animation ) {
+    'osgAnimation/Animation',
+    'osg/Notify'
+], function ( P, osgWrapper, Channel, Animation, Notify ) {
 
     'use strict';
 
@@ -369,8 +370,12 @@ define( [
     osgAnimationWrapper.RigGeometry = function ( input, rigGeom ) {
         var jsonObj = input.getJSON();
 
-        if ( !jsonObj.BoneMap || !jsonObj.SourceGeometry ) // check boneMap
+        if ( !jsonObj.SourceGeometry ) // check source Geometry
             return P.reject();
+
+        if ( !jsonObj.BoneMap )
+            Notify.warn( 'RigGeometry without BoneMap found' );
+
 
         //Import rigGeometry as Geometry + BoneMap
         var rigPromise = osgWrapper.Geometry( input, rigGeom );

@@ -117,8 +117,10 @@ define( [
                 } else if ( type === 'ShadowCastAttribute' ) {
                     this._isShadowCast = attributes[ i ].isEnabled();
                     this._shadowCastAttribute = attributes[ i ];
-                } else if ( type === 'AnimationAttribute' ) {
-                    this._animation = attributes[ i ];
+                } else if ( type === 'SkinAttribute' ) {
+                    this._skin = attributes[ i ];
+                } else if ( type === 'MorphAttribute' ) {
+                    this._morph = attributes[ i ];
                 }
             }
         },
@@ -1112,7 +1114,7 @@ define( [
 
             var inputWeights = this.getOrCreateAttribute( 'vec4', 'Weights' );
             var inputBones = this.getOrCreateAttribute( 'vec4', 'Bones' );
-            var matrixPalette = this.getOrCreateUniform( 'vec4', 'uBones', this._animation.getBoneSize() );
+            var matrixPalette = this.getOrCreateUniform( 'vec4', 'uBones', this._skin.getBoneSize() );
 
             this.getNode( 'Animation' ).inputs( {
                 weights: inputWeights,
@@ -1124,24 +1126,48 @@ define( [
 
             return boneMatrix;
         },
-        getOrCreateVertexAttribute: function () {
-            var v = this._variables[ 'vertexAttribute' ];
-            if ( v )
-                return v;
+        morphTransform: function ( inputVertex, outputVertex ) {
+            var inputs = {
+                vertex: inputVertex,
+                weights: this.getOrCreateUniform( 'vec4', 'uTargetWeights' )
+            };
+            var nbTarget = this._morph.getNbTarget();
+            for ( var i = 1; i <= nbTarget; i++ )
+                inputs[ 'target' + i ] = this.getOrCreateAttribute( 'vec3', 'Vertex_' + i );
 
-            var inputVertex = this.getOrCreateAttribute( 'vec3', 'Vertex' );
-            if ( !this._animation )
-                return inputVertex;
-
-            var positionAnimated = this.createVariable( 'vec3', 'vertexAttribute' );
-
+            this.getNode( 'MorphNode' ).inputs( inputs ).outputs( {
+                out: outputVertex
+            } );
+            return outputVertex;
+        },
+        skinTransform: function ( inputVertex, outputVertex ) {
             this.getNode( 'MatrixMultPosition' ).setInverse( true ).inputs( {
                 matrix: this.getOrCreateBoneMatrix(),
                 vec: inputVertex
             } ).outputs( {
-                vec: positionAnimated
+                vec: outputVertex
             } );
-            return positionAnimated;
+            return outputVertex;
+        },
+        getOrCreateVertexAttribute: function () {
+            var v = this.getVariable( 'vertexAttribute' );
+            if ( v )
+                return v;
+
+            var inputVertex = this.getOrCreateAttribute( 'vec3', 'Vertex' );
+            if ( !this._skin && !this._morph )
+                return inputVertex;
+
+            var posOut = this.createVariable( 'vec3', 'vertexAttribute' );
+
+            if ( this._morph && !this._skin )
+                return this.morphTransform( inputVertex, posOut );
+            else if ( !this._morph && this._skin )
+                return this.skinTransform( inputVertex, posOut );
+
+            var tmpMorph = this.createVariable( 'vec3', 'vertexMorphAttribute' );
+            this.morphTransform( inputVertex, tmpMorph );
+            return this.skinTransform( tmpMorph, posOut );
         },
         getOrCreateNormalAttribute: function () {
             var v = this._variables[ 'normalAttribute' ];
@@ -1149,7 +1175,7 @@ define( [
                 return v;
 
             var inputNormal = this.getOrCreateAttribute( 'vec3', 'Normal' );
-            if ( !this._animation )
+            if ( !this._skin )
                 return inputNormal;
 
             var normalAnimated = this.createVariable( 'vec3', 'normalAttribute' );
@@ -1161,7 +1187,6 @@ define( [
                 vec: normalAnimated
             } );
             return normalAnimated;
-
         },
         declareVertexTransformShadeless: function ( glPosition ) {
             // No light

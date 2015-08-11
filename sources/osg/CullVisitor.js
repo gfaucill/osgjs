@@ -19,8 +19,9 @@ define( [
     'osg/Vec3',
     'osgAnimation/Skeleton',
     'osgAnimation/RigGeometry',
-    'osgAnimation/Bone'
-], function ( Notify, MACROUTILS, NodeVisitor, CullSettings, CullStack, Matrix, MatrixTransform, Projection, LightSource, Geometry, RenderLeaf, RenderStage, Node, Lod, PagedLOD, Camera, TransformEnums, Vec3, Skeleton, RigGeometry, Bone ) {
+    'osgAnimation/Bone',
+    'osgAnimation/MorphGeometry'
+], function ( Notify, MACROUTILS, NodeVisitor, CullSettings, CullStack, Matrix, MatrixTransform, Projection, LightSource, Geometry, RenderLeaf, RenderStage, Node, Lod, PagedLOD, Camera, TransformEnums, Vec3, Skeleton, RigGeometry, Bone, MorphGeometry ) {
     'use strict';
 
     /**
@@ -452,7 +453,7 @@ define( [
     // since the only difference is that we want to push an additional state
     // Maybe it will be useful when we'll add morph target geometry or something...
     var postPushGeometry = function ( cull, node ) {
-        if ( node.typeID === RigGeometry.typeID ) {
+        if ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) {
             var sta = node.getStateSetAnimation();
             if ( sta ) cull.pushStateSet( sta );
         }
@@ -460,7 +461,7 @@ define( [
 
     // same comment as above (postPushGeometry)
     var prePopGeometry = function ( cull, node ) {
-        if ( node.typeID === RigGeometry.typeID && node.getStateSetAnimation() )
+        if ( ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) && node.getStateSetAnimation() )
             cull.popStateSet();
     };
 
@@ -522,6 +523,8 @@ define( [
     CullVisitor.prototype[ Skeleton.typeID ] = CullVisitor.prototype[ MatrixTransform.typeID ];
 
     CullVisitor.prototype[ RigGeometry.typeID ] = CullVisitor.prototype[ Geometry.typeID ];
+
+    CullVisitor.prototype[ MorphGeometry.typeID ] = CullVisitor.prototype[ Geometry.typeID ];
 
     CullVisitor.prototype[ Bone.typeID ] = CullVisitor.prototype[ MatrixTransform.typeID ];
 

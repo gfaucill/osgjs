@@ -8,31 +8,31 @@ define( [
     'use strict';
 
     /**
-     * AnimationAttribute encapsulate Animation State
-     * @class AnimationAttribute
+     * SkinAttribute encapsulate Animation State
+     * @class SkinAttribute
      * @inherits StateAttribute
      */
-    var AnimationAttribute = function ( disable, boneSize ) {
+    var SkinAttribute = function ( disable, boneSize ) {
         StateAttribute.call( this );
         this._enable = !disable;
         this._boneSize = boneSize; // optional, if it's not provided, it will fall back to the maximum bone size
     };
 
-    AnimationAttribute.uniforms = {};
-    AnimationAttribute.maxBoneSize = 1;
-    AnimationAttribute.maxBoneAllowed = Infinity; // can be overriden by application specific limit on startup (typically gl limit)
+    SkinAttribute.uniforms = {};
+    SkinAttribute.maxBoneSize = 1;
+    SkinAttribute.maxBoneAllowed = Infinity; // can be overriden by application specific limit on startup (typically gl limit)
 
-    AnimationAttribute.prototype = MACROUTILS.objectLibraryClass( MACROUTILS.objectInherit( StateAttribute.prototype, {
+    SkinAttribute.prototype = MACROUTILS.objectLibraryClass( MACROUTILS.objectInherit( StateAttribute.prototype, {
 
-        attributeType: 'AnimationAttribute',
+        attributeType: 'SkinAttribute',
         cloneType: function () {
-            return new AnimationAttribute( true, this._boneSize );
+            return new SkinAttribute( true, this._boneSize );
         },
         setBoneSize: function ( boneSize ) {
             this._boneSize = boneSize;
         },
         getBoneSize: function () {
-            return this._boneSize !== undefined ? this._boneSize : AnimationAttribute.maxBoneSize;
+            return this._boneSize !== undefined ? this._boneSize : SkinAttribute.maxBoneSize;
         },
 
         getTypeMember: function () {
@@ -41,13 +41,12 @@ define( [
 
         getOrCreateUniforms: function () {
             // uniform are once per CLASS attribute, not per instance
-            var obj = AnimationAttribute;
+            var obj = SkinAttribute;
             var typeMember = this.getTypeMember();
 
             if ( obj.uniforms[ typeMember ] ) return obj.uniforms[ typeMember ];
 
             var uniforms = {};
-
             uniforms[ 'uBones' ] = new Uniform.createFloat4Array( [], 'uBones' );
             obj.uniforms[ typeMember ] = new Map( uniforms );
 
@@ -57,8 +56,8 @@ define( [
             this._matrixPalette = matrixPalette;
             // update max bone size
             if ( this._boneSize === undefined ) {
-                AnimationAttribute.maxBoneSize = Math.max( AnimationAttribute.maxBoneSize, matrixPalette.length / 4 );
-                AnimationAttribute.maxBoneSize = Math.min( AnimationAttribute.maxBoneAllowed, AnimationAttribute.maxBoneSize );
+                SkinAttribute.maxBoneSize = Math.max( SkinAttribute.maxBoneSize, matrixPalette.length / 4 );
+                SkinAttribute.maxBoneSize = Math.min( SkinAttribute.maxBoneAllowed, SkinAttribute.maxBoneSize );
             }
         },
         getMatrixPalette: function () {
@@ -69,6 +68,12 @@ define( [
         isEnabled: function () {
             return this._enable;
         },
+        // isSkinAnimated: function () {
+        //     return this._boneSize > 0;
+        // },
+        // isMorphAnimated: function () {
+        //     return this._nbTarget > 0;
+        // },
         getHash: function () {
             // bonesize is important, as the shader itself
             // has a different code and uniform are not shared
@@ -90,9 +95,9 @@ define( [
             this.setDirty( false );
         }
 
-    } ), 'osgShadow', 'AnimationAttribute' );
+    } ), 'osgShadow', 'SkinAttribute' );
 
-    MACROUTILS.setTypeID( AnimationAttribute );
+    MACROUTILS.setTypeID( SkinAttribute );
 
-    return AnimationAttribute;
+    return SkinAttribute;
 } );

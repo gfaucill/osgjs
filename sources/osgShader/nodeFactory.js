@@ -7,8 +7,9 @@ define( [
     'osgShader/node/shadows',
     'osgShader/node/operations',
     'osgShader/node/textures',
+    'osgShader/node/morph'
 
-], function ( Notify, animation, data, functions, lights, shadows, operations, textures ) {
+], function ( Notify, animation, data, functions, lights, shadows, operations, textures, morph ) {
     'use strict';
 
     var Factory = function () {
@@ -20,6 +21,7 @@ define( [
         this.registerNodes( textures );
         this.registerNodes( functions );
         this.registerNodes( lights );
+        this.registerNodes( morph );
         this.registerNodes( shadows );
         this.registerNodes( operations );
     };

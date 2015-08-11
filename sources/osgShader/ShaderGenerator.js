@@ -15,7 +15,7 @@ define( [
     var DefaultsAcceptAttributeTypes = [
         'ShadowCast',
         'ShadowReceive',
-        'AnimationAttribute',
+        'SkinAttribute',
         'ShadowTexture',
         'Texture',
         'Light',

@@ -1,8 +1,7 @@
 vec3 morphTransform1( const in vec4 weightsTarget, const in vec3 vertex, const in vec3 target1 )
 {
     if( length(weightsTarget) == 0.0 ) return vertex;
-    vec4 weight = normalize( weightsTarget );
-    return vertex * ( 1.0 - weight.x ) + weight.x * target1;
+    return vertex * ( 1.0 - weightsTarget.x ) + weightsTarget.x * target1;
 }
 
 vec3 morphTransform2( const in vec4 weightsTarget, const in vec3 vertex, const in vec3 target1,

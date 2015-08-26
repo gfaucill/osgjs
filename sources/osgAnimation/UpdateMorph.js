@@ -1,19 +1,22 @@
 define( [
     'osg/Utils',
-    'osg/Object',
-    'osgAnimation/MorphGeometry',
-    'osgAnimation/RigGeometry'
-], function ( MACROUTILS, ObjectBase, MorphGeometry, RigGeometry ) {
+    'osgAnimation/RigGeometry',
+    'osgAnimation/AnimationUpdateCallback',
+], function ( MACROUTILS, RigGeometry, AnimationUpdateCallback ) {
     'use strict';
 
     var UpdateMorph = function () {
+        AnimationUpdateCallback.call( this );
+
         this._needInit = true;
         this._targets = {};
     };
 
-    UpdateMorph.prototype = MACROUTILS.objectInherit( ObjectBase.prototype, {
+    UpdateMorph.prototype = MACROUTILS.objectInherit( AnimationUpdateCallback.prototype, {
 
         init: function ( node ) {
+
+            var MorphGeometry = require( 'osgAnimation/MorphGeometry' );
 
             var findTarget = function ( target, name, manager ) {
                 var animations = manager._instanceAnimations;
@@ -25,7 +28,7 @@ define( [
                     for ( var c = 0, m = channels.length; c < m; c++ ) {
                         var channel = channels[ c ];
                         if ( channel.channel.target === target && parseInt( channel.channel.name ) === name ) {
-                            return manager._targetID[ channel.targetID ];
+                            return manager._targets[ channel.targetID ];
                         }
                     }
                 }
@@ -73,17 +76,14 @@ define( [
             if ( morph ) {
 
                 // Send value to the shader
-                var uniform = morph.getTargetsWeight();
-                var uniformArray = uniform.get();
+                var array = morph.getTargetsWeight();
 
                 var targets = Object.keys( this._targets );
                 for ( var i = 0, l = targets.length; i < l; i++ ) {
                     var key = targets[ i ];
-                    uniformArray[ parseInt( key ) ] = this._targets[ key ].value;
+                    if ( this._targets[ parseInt( key ) ] )
+                        array[ parseInt( key ) ] = this._targets[ parseInt( key ) ].value;
                 }
-
-                uniform.set( uniformArray );
-                uniform.dirty();
             }
             return true;
         }

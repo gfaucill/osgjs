@@ -1175,18 +1175,31 @@ define( [
                 return v;
 
             var inputNormal = this.getOrCreateAttribute( 'vec3', 'Normal' );
-            if ( !this._skin )
+            if ( !this._skin && !this._morph )
                 return inputNormal;
 
-            var normalAnimated = this.createVariable( 'vec3', 'normalAttribute' );
+            var posOut = this.createVariable( 'vec3', 'normalAttribute' );
 
-            this.getNode( 'MatrixMultDirection' ).setInverse( true ).inputs( {
-                matrix: this.getOrCreateBoneMatrix(),
-                vec: inputNormal
-            } ).outputs( {
-                vec: normalAnimated
-            } );
-            return normalAnimated;
+            if ( this._morph && !this._skin )
+                return this.morphTransform( inputNormal, posOut );
+            else if ( !this._morph && this._skin )
+                return this.skinTransform( inputNormal, posOut );
+
+            var tmpMorph = this.createVariable( 'vec3', 'normalMorphAttribute' );
+            this.morphTransform( inputNormal, tmpMorph );
+            return this.skinTransform( tmpMorph, posOut );
+
+
+
+            // var normalAnimated = this.createVariable( 'vec3', 'normalAttribute' );
+
+            // this.getNode( 'MatrixMultDirection' ).setInverse( true ).inputs( {
+            //     matrix: this.getOrCreateBoneMatrix(),
+            //     vec: inputNormal
+            // } ).outputs( {
+            //     vec: normalAnimated
+            // } );
+            // return normalAnimated;
         },
         declareVertexTransformShadeless: function ( glPosition ) {
             // No light

@@ -58,9 +58,8 @@ define( [
 
             if ( this._manager ) { //If we got all we need we stop to call init()
                 var st = this.getStateSetAnimation();
-                var animAttrib = new MorphAttribute();
+                var animAttrib = new MorphAttribute( this.getTargets().length );
                 st.setAttributeAndModes( animAttrib, StateAttribute.ON );
-                animAttrib.setNbTarget( this.getTargets().length );
                 animAttrib.setTargetWeights( this.getTargetsWeight() );
 
                 this._needInit = false;

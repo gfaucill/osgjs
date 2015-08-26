@@ -33,7 +33,7 @@
 
     var createScene = function ( viewer ) {
         var root = new osg.Node();
-        osgDB.readNodeURL( '../media/models/animation/morph.osgjs' ).then( function ( node ) {
+        osgDB.readNodeURL( '../media/models/animation/skinmorph.osgjs' ).then( function ( node ) {
             root.addChild( node );
             var gizmo = new osgUtil.NodeGizmo( viewer );
             gizmo._autoInsertMT = true;

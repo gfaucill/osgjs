@@ -7,6 +7,7 @@ define( [
     'osgAnimation/Bone',
     'osgAnimation/Channel',
     'osgAnimation/CollectAnimationUpdateCallbackVisitor',
+    'osgAnimation/MorphAttribute',
     'osgAnimation/Easing',
     'osgAnimation/Interpolator',
     'osgAnimation/MorphGeometry',
@@ -21,7 +22,7 @@ define( [
     'osgAnimation/UpdateMatrixTransform',
     'osgAnimation/UpdateMorph',
     'osgAnimation/UpdateSkeleton'
-], function ( MACROUTILS, Animation, SkinAttribute, AnimationUpdateCallback, BasicAnimationManager, Bone, Channel, CollectAnimationUpdateCallbackVisitor, Easing, Interpolator, MorphGeometry, RigGeometry, Skeleton, StackedMatrix, StackedQuaternion, StackedRotateAxis, StackedScale, StackedTranslate, UpdateBone, UpdateMatrixTransform, UpdateMorph, UpdateSkeleton ) {
+], function ( MACROUTILS, Animation, SkinAttribute, AnimationUpdateCallback, BasicAnimationManager, Bone, Channel, CollectAnimationUpdateCallbackVisitor, MorphAttribute, Easing, Interpolator, MorphGeometry, RigGeometry, Skeleton, StackedMatrix, StackedQuaternion, StackedRotateAxis, StackedScale, StackedTranslate, UpdateBone, UpdateMatrixTransform, UpdateMorph, UpdateSkeleton ) {
 
     'use strict';
 
@@ -36,6 +37,7 @@ define( [
     osgAnimation.Bone = Bone;
     osgAnimation.Channel = Channel;
     osgAnimation.CollectAnimationUpdateCallbackVisitor = CollectAnimationUpdateCallbackVisitor;
+    osgAnimation.MorphAttribute = MorphAttribute;
     osgAnimation.MorphGeometry = MorphGeometry;
     osgAnimation.RigGeometry = RigGeometry;
     osgAnimation.Skeleton = Skeleton;

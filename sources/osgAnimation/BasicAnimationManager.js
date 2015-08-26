@@ -10,8 +10,9 @@ define( [
     'osgAnimation/Interpolator',
     'osgAnimation/CollectAnimationUpdateCallbackVisitor',
     'osgAnimation/Target',
-
-], function ( Notify, MACROUTILS, BaseObject, Quat, Vec3, Matrix, Channel, Animation, Interpolator, CollectAnimationUpdateCallbackVisitor, Target ) {
+    'osgAnimation/UpdateMorph',
+    'osgAnimation/CollectAnimationUpdateMorphCallbackVisitor'
+], function ( Notify, MACROUTILS, BaseObject, Quat, Vec3, Matrix, Channel, Animation, Interpolator, CollectAnimationUpdateCallbackVisitor, Target, UpdateMorph, CollectAnimationUpdateMorphCallbackVisitor ) {
 
     'use strict';
 
@@ -105,6 +106,8 @@ define( [
         // animation callback to update
         this._animationsUpdateCallback = {};
         this._animationsUpdateCallbackArray = [];
+
+        this._updateMorphCallback = {};
 
         // queue of animations to register
         this._animationsToRegister = [];
@@ -377,6 +380,12 @@ define( [
             var collector = new CollectAnimationUpdateCallbackVisitor();
             node.accept( collector );
             this._animationsUpdateCallback = collector.getAnimationUpdateCallbackMap();
+
+            collector = new CollectAnimationUpdateMorphCallbackVisitor();
+            node.accept( collector );
+            collector.computeCallbackUniqIdMap();
+            this._updateMorphCallback = collector.getCallbackUniqIdMap();
+
         },
 
         // assignTargetToAnimationCallback
@@ -425,6 +434,19 @@ define( [
                             // unique target name. It's a problem
                             if ( target !== targetMap[ uniqueTargetName ] )
                                 Notify.warn( 'detected differents target instance with the same name (' + name + ')' );
+                        }
+                    }
+                } else if ( animationCallback instanceof UpdateMorph ) {
+                    var updateMorphCallback = this._updateMorphCallback;
+                    var uMorphkeys = Object.keys( updateMorphCallback );
+                    for ( var k = 0, nk = uMorphkeys.length; k < nk; k++ ) {
+                        var cb = updateMorphCallback[ uMorphkeys[ k ] ];
+                        if ( cb === animationCallback ) {
+                            var floatTarget = Target.createFloatTarget();
+                            targetMap[ uMorphkeys[ k ] ] = floatTarget;
+                            floatTarget.id = targetID++;
+                            targets.push( floatTarget );
+                            this._targetsByTypes[ 2 /*Float*/ ].push( floatTarget );
                         }
                     }
                 }

@@ -13,8 +13,9 @@ define( [
      * @class MorphAttribute
      * @inherits StateAttribute
      */
-    var MorphAttribute = function ( disable ) {
+    var MorphAttribute = function ( nbTarget, disable ) {
         StateAttribute.call( this );
+        this._nbTarget = nbTarget;
         this._enable = !disable;
     };
 
@@ -24,7 +25,7 @@ define( [
 
         attributeType: 'MorphAttribute',
         cloneType: function () {
-            return new MorphAttribute( true );
+            return new MorphAttribute( this._nbTarget, true );
         },
 
         getTypeMember: function () {
@@ -43,9 +44,6 @@ define( [
             obj.uniforms[ typeMember ] = new Map( uniforms );
 
             return obj.uniforms[ typeMember ];
-        },
-        setNbTarget: function ( nbTarget ) {
-            this._nbTarget = nbTarget;
         },
         getNbTarget: function () {
             return this._nbTarget;

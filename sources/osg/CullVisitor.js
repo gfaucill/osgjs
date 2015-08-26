@@ -456,6 +456,10 @@ define( [
         if ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) {
             var sta = node.getStateSetAnimation();
             if ( sta ) cull.pushStateSet( sta );
+            if ( node.typeID === RigGeometry.typeID && node.getSourceGeometry().typeID === MorphGeometry.typeID ) {
+                sta = node.getSourceGeometry().getStateSetAnimation();
+                if ( sta ) cull.pushStateSet( sta );
+            }
         }
     };
 
@@ -463,6 +467,9 @@ define( [
     var prePopGeometry = function ( cull, node ) {
         if ( ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) && node.getStateSetAnimation() )
             cull.popStateSet();
+        if ( node.typeID === RigGeometry.typeID && node.getSourceGeometry().typeID === MorphGeometry.typeID && node.getSourceGeometry().getStateSetAnimation() ) {
+            cull.popStateSet();
+        }
     };
 
     CullVisitor.prototype[ Geometry.typeID ] = ( function () {

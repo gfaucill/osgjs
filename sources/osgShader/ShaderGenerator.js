@@ -16,6 +16,7 @@ define( [
         'ShadowCast',
         'ShadowReceive',
         'SkinAttribute',
+        'MorphAttribute',
         'ShadowTexture',
         'Texture',
         'Light',

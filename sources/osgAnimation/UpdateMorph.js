@@ -2,7 +2,9 @@ define( [
     'osg/Utils',
     'osgAnimation/RigGeometry',
     'osgAnimation/AnimationUpdateCallback',
-], function ( MACROUTILS, RigGeometry, AnimationUpdateCallback ) {
+    'osgAnimation/Target',
+    'osgAnimation/MorphGeometry'
+], function ( MACROUTILS, RigGeometry, AnimationUpdateCallback, Target, MorphGeometry ) {
     'use strict';
 
     var UpdateMorph = function () {
@@ -15,26 +17,7 @@ define( [
     UpdateMorph.prototype = MACROUTILS.objectInherit( AnimationUpdateCallback.prototype, {
 
         init: function ( node ) {
-
-            var MorphGeometry = require( 'osgAnimation/MorphGeometry' );
-
-            var findTarget = function ( target, name, manager ) {
-                var animations = manager._instanceAnimations;
-                var keys = Object.keys( animations );
-                for ( var i = 0, l = keys.length; i < l; i++ ) {
-                    var animation = animations[ keys[ i ] ];
-                    var channels = animation.channels;
-
-                    for ( var c = 0, m = channels.length; c < m; c++ ) {
-                        var channel = channels[ c ];
-                        if ( channel.channel.target === target && parseInt( channel.channel.name ) === name ) {
-                            return manager._targets[ channel.targetID ];
-                        }
-                    }
-                }
-            };
-
-            //Find the morph geometry & link targets
+            //Find the morph geometry & init it
             var children = node.getChildren();
             for ( var i = 0, l = children.length; i < l; i++ ) {
                 var geom = children[ i ];
@@ -45,21 +28,11 @@ define( [
                     morph = geom.getSourceGeometry();
                 }
 
-                if ( morph ) {
-                    if ( morph.needInit() && morph.init() ) return true;
+                if ( !morph ) continue;
+                if ( morph.needInit() && morph.init() ) return true;
 
-                    var thisName = this.getName();
-                    var targets = morph.getTargets();
-                    for ( i = 0, l = targets.length; i < l; i++ ) {
-                        var target = targets[ i ];
-                        if ( target.getName() === thisName ) {
-                            this._targets[ i ] = findTarget( target.getName(), i, morph._manager );
-                        }
-                    }
-
-                    this._morphGeometry = morph;
-                    this._needInit = false;
-                }
+                this._morphGeometry = morph;
+                this._needInit = false;
             }
         },
 
@@ -67,22 +40,27 @@ define( [
             return this._needInit;
         },
 
-        update: function ( node /*, nv*/ ) {
+        getOrCreateTarget: function ( index ) {
+            if ( !this._targets[ index ] ) {
+                this._targets[ index ] = Target.createFloatTarget( 0 );
+            }
+            return this._targets[ index ];
+        },
 
+        update: function ( node /*, nv*/ ) {
             if ( this.needInit() )
                 this.init( node );
 
             var morph = this._morphGeometry;
             if ( morph ) {
-
-                // Send value to the shader
                 var array = morph.getTargetsWeight();
 
                 var targets = Object.keys( this._targets );
                 for ( var i = 0, l = targets.length; i < l; i++ ) {
-                    var key = targets[ i ];
-                    if ( this._targets[ parseInt( key ) ] )
-                        array[ parseInt( key ) ] = this._targets[ parseInt( key ) ].value;
+                    var key = parseInt( targets[ i ] );
+                    var target = this._targets[ key ];
+                    if ( target )
+                        array[ key ] = target.value;
                 }
             }
             return true;

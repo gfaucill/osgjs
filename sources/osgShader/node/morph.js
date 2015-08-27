@@ -12,44 +12,51 @@ define( [
 
     MorphNode.prototype = MACROUTILS.objectInherit( Node.prototype, {
         type: 'Morph',
-        validInputs: [ 'weights', 'vertex', 'target1' ],
+        validInputs: [ 'weights', 'vertex', 'target1', /*'target2','target3','target4'*/ ],
         validOutputs: [ 'out' ],
 
         globalFunctionDeclaration: function () {
-            return '#pragma include "morph.glsl"';
+            var inp = this._inputs;
+            var weightVec = inp.weights.getVariable();
+            var vertex = inp.vertex.getVariable();
+            var weightVar = 'weightsTarget';
+            var f = function ( e ) {
+                return e.lastIndexOf( 'target' ) === 0;
+            };
+            var g = function ( e, i ) {
+                return weightVar + '[' + i + ']';
+            };
+            var t = function ( e, i ) {
+                return vertex + '_' + ( i + 1 );
+            };
+            var targets = Object.keys( inp ).filter( f ).map( t );
+            var weights;
+            var args = function ( e ) {
+                return 'const in vec3 ' + e;
+            };
+            var h = function ( e, i ) {
+                return e + ' * ' + weights[ i ];
+            };
+
+
+            var str = 'vec3 morphTransform( const in vec4 weightsTarget,  const in vec3 vertex, ' + targets.map( args ).join( ', ' ) + ' ) { \n';
+            str += '\tif( length( weightsTarget ) == 0.0 ) return vertex;\n';
+            if ( targets.length > 1 ) {
+                weightVar = 'weight';
+                str += '\tvec4 weight = normalize( ' + weightVec + ' );\n';
+            }
+            weights = targets.map( g );
+            return str += '\treturn ' + vertex + '* (1.0 - (' + weights.join( ' + ' ) + ')) + ' + targets.map( h ).join( ' + ' ) + ';' + '\n}';
         },
 
         computeShader: function () {
-            // var inp = this._inputs;
-            // var weights = inp.weights.getVariable();
-            // var vertex = inp.vertex.getVariable();
-            // var targets = inp.targets;
+            var inputs = [ this._inputs.weights, this._inputs.vertex ];
+            for ( var i = 1; i <= 4; i++ ) {
+                if ( !this._inputs[ 'target' + i ] ) break;
+                inputs.push( this._inputs[ 'target' + i ] );
+            }
 
-            // var str = 'if( length(' + weights + ') == 0.0 ) return ' + vertex + ';\n';
-            // str += 'vec4 weight = normalize( ' + weights + ' )\n';
-
-            // str += 'return ' + vertex + '(1.0 - (' + weights + '[0]';
-
-            // var i = 0;
-            // var nbTargets = targets.length;
-            // for ( i = 1; i < nbTargets; ++i )
-            //     str += '+' + weights + '[' + i + ']';
-
-            // str += ')) + ' + weights + '[0] * ' + targets[ 0 ].getVariable();
-
-            // for ( i = 1; i < nbTargets; ++i )
-            //     str += '+ ' + weights + '[' + i + '] * ' + targets[ i ].getVariable();
-
-            // str += ';';
-
-            if ( this._inputs.target4 )
-                return ShaderUtils.callFunction( 'morphTransform4', this._outputs.out, [ this._inputs.weights, this._inputs.vertex, this._inputs.target1, this._inputs.target2, this._inputs.target3, this._inputs.target4 ] );
-            if ( this._inputs.target3 )
-                return ShaderUtils.callFunction( 'morphTransform3', this._outputs.out, [ this._inputs.weights, this._inputs.vertex, this._inputs.target1, this._inputs.target2, this._inputs.target3 ] );
-            if ( this._inputs.target2 )
-                return ShaderUtils.callFunction( 'morphTransform2', this._outputs.out, [ this._inputs.weights, this._inputs.vertex, this._inputs.target1, this._inputs.target2 ] );
-            if ( this._inputs.target1 )
-                return ShaderUtils.callFunction( 'morphTransform1', this._outputs.out, [ this._inputs.weights, this._inputs.vertex, this._inputs.target1 ] );
+            return ShaderUtils.callFunction( 'morphTransform', this._outputs.out, inputs );
         }
     } );
 

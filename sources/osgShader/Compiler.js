@@ -1116,10 +1116,11 @@ define( [
             var inputBones = this.getOrCreateAttribute( 'vec4', 'Bones' );
             var matrixPalette = this.getOrCreateUniform( 'vec4', 'uBones', this._skin.getBoneSize() );
 
-            this.getNode( 'Animation' ).inputs( {
+            this.getNode( 'SkeletalNode' ).inputs( {
                 weights: inputWeights,
                 bonesIndex: inputBones,
-                matrixPalette: matrixPalette
+                matrixPalette: matrixPalette,
+                boneSize: this.getOrCreateConstant( 'int', 'boneSize' ).setValue( this._skin.getBoneSize() )
             } ).outputs( {
                 mat4: boneMatrix
             } );
@@ -1133,7 +1134,7 @@ define( [
             };
             var nbTarget = this._morph.getNbTarget();
             for ( var i = 1; i <= nbTarget; i++ )
-                inputs[ 'target' + i ] = this.getOrCreateAttribute( 'vec3', 'Vertex_' + i );
+                inputs[ 'target' + i ] = this.getOrCreateAttribute( 'vec3', inputVertex.getVariable() + '_' + i );
 
             this.getNode( 'MorphNode' ).inputs( inputs ).outputs( {
                 out: outputVertex

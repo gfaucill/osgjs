@@ -440,13 +440,15 @@ define( [
                     var updateMorphCallback = this._updateMorphCallback;
                     var uMorphkeys = Object.keys( updateMorphCallback );
                     for ( var k = 0, nk = uMorphkeys.length; k < nk; k++ ) {
-                        var cb = updateMorphCallback[ uMorphkeys[ k ] ];
+                        var cbMoprhName = uMorphkeys[ k ];
+                        var cb = updateMorphCallback[ cbMoprhName ];
                         if ( cb === animationCallback ) {
-                            var floatTarget = Target.createFloatTarget();
+                            var index = parseInt( cbMoprhName.substr( -1 ) );
+                            var floatTarget = cb.getOrCreateTarget( index );
                             targetMap[ uMorphkeys[ k ] ] = floatTarget;
                             floatTarget.id = targetID++;
                             targets.push( floatTarget );
-                            this._targetsByTypes[ 2 /*Float*/ ].push( floatTarget );
+                            this._targetsByTypes[ floatTarget.type ].push( floatTarget );
                         }
                     }
                 }

@@ -6,13 +6,13 @@ define( [
 ], function ( MACROUTILS, Texture, ShaderUtils, Node ) {
     'use strict';
 
-    var AnimationNode = function () {
+    var SkeletalNode = function () {
         Node.apply( this );
     };
 
-    AnimationNode.prototype = MACROUTILS.objectInherit( Node.prototype, {
-        type: 'Animation',
-        validInputs: [ 'weights', 'bonesIndex', 'matrixPalette' ],
+    SkeletalNode.prototype = MACROUTILS.objectInherit( Node.prototype, {
+        type: 'Skeletal',
+        validInputs: [ 'weights', 'bonesIndex', 'matrixPalette', 'boneSize' ],
         validOutputs: [ 'mat4' ],
 
         globalFunctionDeclaration: function () {
@@ -26,6 +26,6 @@ define( [
     } );
 
     return {
-        Animation: AnimationNode
+        SkeletalNode: SkeletalNode
     };
 } );

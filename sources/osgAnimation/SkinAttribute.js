@@ -95,7 +95,7 @@ define( [
             this.setDirty( false );
         }
 
-    } ), 'osgShadow', 'SkinAttribute' );
+    } ), 'osgAnimation', 'SkinAttribute' );
 
     MACROUTILS.setTypeID( SkinAttribute );
 

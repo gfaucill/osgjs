@@ -72,7 +72,7 @@ define( [
             this.setDirty( false );
         }
 
-    } ), 'osgShadow', 'MorphAttribute' );
+    } ), 'osgAnimation', 'MorphAttribute' );
 
     MACROUTILS.setTypeID( MorphAttribute );
 

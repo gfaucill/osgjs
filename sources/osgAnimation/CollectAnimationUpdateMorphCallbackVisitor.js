@@ -4,9 +4,9 @@ define( [
     'osg/NodeVisitor',
     'osgAnimation/AnimationUpdateCallback',
     'osgAnimation/UpdateMorph',
-    'osgAnimation/RigGeometry'
-], function ( Notify, MACROUTILS, NodeVisitor, AnimationUpdateCallback, UpdateMorph, RigGeometry ) {
-
+    'osgAnimation/RigGeometry',
+    'osgAnimation/MorphGeometry'
+], function ( Notify, MACROUTILS, NodeVisitor, AnimationUpdateCallback, UpdateMorph, RigGeometry, MorphGeometry ) {
     'use strict';
 
     // search into a subgraph all updateMorph
@@ -15,7 +15,6 @@ define( [
         this._animationUpdateCallback = {};
         this._callbackUniqIdMap = {};
     };
-
 
     CollectAnimationUpdateMorphCallbackVisitor.prototype = MACROUTILS.objectInherit( NodeVisitor.prototype, {
         getAnimationUpdateCallbackMap: function () {
@@ -39,9 +38,6 @@ define( [
         },
 
         computeCallbackUniqIdMap: function () {
-
-            var MorphGeometry = require( 'osgAnimation/MorphGeometry' );
-
             var animationUpdateCallback = this._animationUpdateCallback;
             var callbackUniqIdMap = this._callbackUniqIdMap;
             var keys = Object.keys( animationUpdateCallback );
@@ -56,7 +52,6 @@ define( [
                 var children = node.getChildren();
                 for ( var j = 0, m = children.length; j < m; j++ ) {
                     var child = children[ j ];
-
                     var morph;
 
                     if ( child instanceof MorphGeometry ) {
@@ -66,9 +61,8 @@ define( [
                         if ( source instanceof MorphGeometry ) {
                             morph = source;
                         }
-                    } else {
-                        continue;
                     }
+                    if ( !morph ) continue;
 
                     var targets = morph.getTargets();
                     for ( var t = 0, nbTarget = targets.length; t < nbTarget; t++ ) {

@@ -401,6 +401,9 @@ define( [
         rigGeom._boneNameID = jsonObj.BoneMap;
 
         var mergeGeometry = function ( from, to ) {
+            // Merge rigGeometry and sourceGeometry, we keep source instance and adds
+            // some references to the rigGeometry
+
             //Merge primitives
             to.primitives = from.primitives;
 
@@ -410,6 +413,11 @@ define( [
                 var key = keys[ i ];
                 to.attributes[ key ] = from.attributes[ key ];
             }
+
+            //Merge state set
+            to.stateset = from.stateset;
+
+            //@TODO Think to merge more stuff here
         };
 
         //Import source geometry and merge it with the rigGeometry
@@ -460,6 +468,9 @@ define( [
             for ( var i = 1, l = pArray.length; i < l; i++ ) {
                 var target = pArray[ i ];
 
+                //Here we merge also Vertex and Normal, probably we should merge
+                //more attributes like Tangent, UV, ...
+                //Note that more attributes are not supported by the compiler now
                 var attributes = target.attributes;
                 if ( attributes.Vertex ) {
                     geomAttr[ 'Vertex_' + i ] = attributes.Vertex;

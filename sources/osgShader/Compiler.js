@@ -1119,8 +1119,7 @@ define( [
             this.getNode( 'SkeletalNode' ).inputs( {
                 weights: inputWeights,
                 bonesIndex: inputBones,
-                matrixPalette: matrixPalette,
-                boneSize: this.getOrCreateConstant( 'int', 'boneSize' ).setValue( this._skin.getBoneSize() )
+                matrixPalette: matrixPalette
             } ).outputs( {
                 mat4: boneMatrix
             } );
@@ -1141,7 +1140,7 @@ define( [
             } );
             return outputVertex;
         },
-        skinTransform: function ( inputVertex, outputVertex ) {
+        skinTransformVertex: function ( inputVertex, outputVertex ) {
             this.getNode( 'MatrixMultPosition' ).setInverse( true ).inputs( {
                 matrix: this.getOrCreateBoneMatrix(),
                 vec: inputVertex
@@ -1164,11 +1163,20 @@ define( [
             if ( this._morph && !this._skin )
                 return this.morphTransform( inputVertex, posOut );
             else if ( !this._morph && this._skin )
-                return this.skinTransform( inputVertex, posOut );
+                return this.skinTransformVertex( inputVertex, posOut );
 
             var tmpMorph = this.createVariable( 'vec3', 'vertexMorphAttribute' );
             this.morphTransform( inputVertex, tmpMorph );
-            return this.skinTransform( tmpMorph, posOut );
+            return this.skinTransformVertex( tmpMorph, posOut );
+        },
+        skinTransformNormal: function ( inputVertex, outputVertex ) {
+            this.getNode( 'MatrixMultDirection' ).setInverse( true ).inputs( {
+                matrix: this.getOrCreateBoneMatrix(),
+                vec: inputVertex
+            } ).outputs( {
+                vec: outputVertex
+            } );
+            return outputVertex;
         },
         getOrCreateNormalAttribute: function () {
             var v = this._variables[ 'normalAttribute' ];
@@ -1184,23 +1192,11 @@ define( [
             if ( this._morph && !this._skin )
                 return this.morphTransform( inputNormal, posOut );
             else if ( !this._morph && this._skin )
-                return this.skinTransform( inputNormal, posOut );
+                return this.skinTransformNormal( inputNormal, posOut );
 
             var tmpMorph = this.createVariable( 'vec3', 'normalMorphAttribute' );
             this.morphTransform( inputNormal, tmpMorph );
-            return this.skinTransform( tmpMorph, posOut );
-
-
-
-            // var normalAnimated = this.createVariable( 'vec3', 'normalAttribute' );
-
-            // this.getNode( 'MatrixMultDirection' ).setInverse( true ).inputs( {
-            //     matrix: this.getOrCreateBoneMatrix(),
-            //     vec: inputNormal
-            // } ).outputs( {
-            //     vec: normalAnimated
-            // } );
-            // return normalAnimated;
+            return this.skinTransformNormal( tmpMorph, posOut );
         },
         declareVertexTransformShadeless: function ( glPosition ) {
             // No light

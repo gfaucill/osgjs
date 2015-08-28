@@ -16,37 +16,35 @@ define( [
         validOutputs: [ 'out' ],
 
         globalFunctionDeclaration: function () {
-            var inp = this._inputs;
-            var weightVec = inp.weights.getVariable();
-            var vertex = inp.vertex.getVariable();
-            var weightVar = 'weightsTarget';
-            var f = function ( e ) {
-                return e.lastIndexOf( 'target' ) === 0;
-            };
-            var g = function ( e, i ) {
-                return weightVar + '[' + i + ']';
-            };
-            var t = function ( e, i ) {
-                return vertex + '_' + ( i + 1 );
-            };
-            var targets = Object.keys( inp ).filter( f ).map( t );
-            var weights;
-            var args = function ( e ) {
-                return 'const in vec3 ' + e;
-            };
-            var h = function ( e, i ) {
-                return e + ' * ' + weights[ i ];
-            };
+            //vec3 morphTransform( const in vec4 weightsTarget,  const in vec3 vertex, const in vec3 target0, const in vec3 target1, const in vec3 target2 ) {
+            //  if( length( weightsTarget ) == 0.0 ) return vertex;
+            //  vec4 weight = normalize( weightsTarget );
+            //  return vertex * (1.0 - ( + weight[0] + weight[1] + weight[2])) +  + target0 * weight[0] + target1 * weight[1] + target2 * weight[2];
+            //}
+            var nbTargets = Object.keys( this._inputs ).length - 2;
+            var i = 0;
 
+            var str = 'vec3 morphTransform( const in vec4 weightsTarget,  const in vec3 vertex, ';
 
-            var str = 'vec3 morphTransform( const in vec4 weightsTarget,  const in vec3 vertex, ' + targets.map( args ).join( ', ' ) + ' ) { \n';
+            str += 'const in vec3 ' + 'target' + i;
+            for ( i = 1; i < nbTargets; ++i )
+                str += ', const in vec3 ' + 'target' + i;
+            str += ' ) { \n';
+
             str += '\tif( length( weightsTarget ) == 0.0 ) return vertex;\n';
-            if ( targets.length > 1 ) {
-                weightVar = 'weight';
-                str += '\tvec4 weight = normalize( ' + weightVec + ' );\n';
-            }
-            weights = targets.map( g );
-            return str += '\treturn ' + vertex + '* (1.0 - (' + weights.join( ' + ' ) + ')) + ' + targets.map( h ).join( ' + ' ) + ';' + '\n}';
+            if ( nbTargets > 1 )
+                str += '\tvec4 weight = normalize( weightsTarget );\n';
+            var weightVar = nbTargets > 1 ? 'weight' : 'weightsTarget';
+
+            str += '\treturn vertex * (1.0 - (';
+            for ( i = 0; i < nbTargets; ++i )
+                str += ' + ' + weightVar + '[' + i + ']';
+
+            str += ')) + ';
+            for ( i = 0; i < nbTargets; ++i )
+                str += ' + target' + i + ' * ' + weightVar + '[' + i + ']';
+
+            return str += ';' + '\n}\n';
         },
 
         computeShader: function () {

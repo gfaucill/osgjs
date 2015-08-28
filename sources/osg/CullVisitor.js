@@ -465,11 +465,11 @@ define( [
 
     // same comment as above (postPushGeometry)
     var prePopGeometry = function ( cull, node ) {
-        if ( ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) && node.getStateSetAnimation() )
-            cull.popStateSet();
         if ( node.typeID === RigGeometry.typeID && node.getSourceGeometry().typeID === MorphGeometry.typeID && node.getSourceGeometry().getStateSetAnimation() ) {
             cull.popStateSet();
         }
+        if ( ( node.typeID === RigGeometry.typeID || node.typeID === MorphGeometry.typeID ) && node.getStateSetAnimation() )
+            cull.popStateSet();
     };
 
     CullVisitor.prototype[ Geometry.typeID ] = ( function () {

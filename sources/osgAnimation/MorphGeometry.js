@@ -8,17 +8,19 @@ define( [
 ], function ( MACROUTILS, Geometry, StateSet, MorphAttribute, StateAttribute, Target ) {
     'use strict';
 
+     /**
+     * MorphGeometry manage up to 4 morphTargets
+     * @class MorphGeometry
+     * @inherits Geometry
+     */
+
     var MorphGeometry = function () {
         Geometry.call( this );
 
         this._targets = []; // Target list (Geometry)
-        this._weights = {};
-
-        //  {   channelName : targetID,
-        //      ...
-        //  }
-        this._stateSetAnimation = new StateSet();
-        this._targetWeights = new Float32Array( 4 );
+        this._stateSetAnimation = new StateSet(); // StateSet to handle morphAttribute
+        this._targetWeights = new Float32Array( 4 ); // Fixed length array feed by UpdateMorph
+        //this._rigParent = undefined;
 
         this._needInit = true;
     };
@@ -56,6 +58,7 @@ define( [
         },
 
         setParentRigGeometry: function ( parent ) {
+            //Set during serialization process
             this._rigParent = parent;
         },
 

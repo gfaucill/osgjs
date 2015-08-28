@@ -1,6 +1,6 @@
 
 mat4 getMat4FromVec4( const int index, inout mat4 myMat ) {
-    // TODO no uBones globally ...
+    // We have to use a global variable because we can't access dynamically
     // matrix is transpose so we should do vec * matrix
     myMat[0] = uBones[ index ];
     myMat[1] = uBones[ index + 1];

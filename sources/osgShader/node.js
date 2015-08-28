@@ -7,7 +7,7 @@ define( [
     'osgShader/node/lights',
     'osgShader/node/operations'
 
-], function ( /*skeletal, data, textures, functions, lights, operations */) {
+], function ( /*skeletal, morph, data, textures, functions, lights, operations */) {
     'use strict';
 
     var lib = {};

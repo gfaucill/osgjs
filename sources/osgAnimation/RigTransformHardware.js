@@ -80,7 +80,7 @@ define( [
 
             // matrix are 4x3
             var nbVec4Uniforms = this._bones.length * 3;
-            var animAttrib = this._SkinAttribute = new SkinAttribute();
+            var animAttrib = this._skinAttribute = new SkinAttribute();
             animAttrib.setMatrixPalette( new Float32Array( nbVec4Uniforms * 4 ) );
             geom.getStateSetAnimation().setAttributeAndModes( animAttrib, StateAttribute.ON );
 
@@ -96,7 +96,7 @@ define( [
             return function ( transformFromSkeletonToGeometry, invTransformFromSkeletonToGeometry ) {
 
                 var bones = this._bones;
-                var matPalette = this._SkinAttribute.getMatrixPalette();
+                var matPalette = this._skinAttribute.getMatrixPalette();
                 var uniformIndex = 0;
 
                 for ( var i = 0, l = bones.length; i < l; i++ ) {

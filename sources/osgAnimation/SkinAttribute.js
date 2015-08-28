@@ -68,12 +68,6 @@ define( [
         isEnabled: function () {
             return this._enable;
         },
-        // isSkinAnimated: function () {
-        //     return this._boneSize > 0;
-        // },
-        // isMorphAnimated: function () {
-        //     return this._nbTarget > 0;
-        // },
         getHash: function () {
             // bonesize is important, as the shader itself
             // has a different code and uniform are not shared
